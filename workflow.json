@@ -1,0 +1,60 @@
+{
+  "name": "OKX Auto Trade - Test Only",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "webhook/test",
+        "responseMode": "onReceived",
+        "responseCode": 200,
+        "responseData": "Test triggered!"
+      },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "const axios = require('axios');\n\n// === GANTI DI SINI ===\nconst API_KEY = 'GANTI_DENGAN_API_KEY_OKX';\nconst SECRET_KEY = 'GANTI_DENGAN_SECRET_KEY_OKX';\nconst PASSPHRASE = 'GANTI_DENGAN_PASSPHRASE_OKX';\n// ===================\n\ntry {\n  // Cek apakah API bisa connect\n  const timestamp = new Date().toISOString();\n  const method = 'GET';\n  const requestPath = '/api/v5/public/instruments?instType=SPOT';\n  const message = timestamp + method + requestPath;\n  const signature = Buffer.from(message).toString('base64'); // dummy signature\n\n  return [{ json: { status: 'API connection test', api_key: API_KEY.substring(0, 5) + '...' } }];\n} catch (err) {\n  return [{ json: { error: err.message } }];\n}"
+      },
+      "name": "Test OKX API",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [450, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "const nodemailer = require('nodemailer');\n\n// === GANTI DI SINI ===\nconst SMTP_HOST = 'smtp.gmail.com';\nconst SMTP_PORT = 587;\nconst SMTP_USER = 'your-email@gmail.com';\nconst SMTP_PASS = 'your-app-password';\nconst EMAIL_TO = 'your-email@gmail.com';\n// ===================\n\nconst transporter = nodemailer.createTransport({\n  host: SMTP_HOST,\n  port: SMTP_PORT,\n  secure: false,\n  auth: {\n    user: SMTP_USER,\n    pass: SMTP_PASS\n  }\n});\n\nconst mailOptions = {\n  from: SMTP_USER,\n  to: EMAIL_TO,\n  subject: 'n8n OKX Test Run',\n  text: `Waktu: {{ $now }}\\nStatus: Test berhasil!\\nDetail: ${JSON.stringify($json)}\n};\n\ntry {\n  await transporter.sendMail(mailOptions);\n  return [{ json: { status: 'Email sent successfully' } }];\n} catch (err) {\n  console.error('Error sending email:', err.message);\n  return [{ json: { status: 'Email failed', error: err.message } }];\n}"
+      },
+      "name": "Kirim Email Test",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [650, 400]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Test OKX API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test OKX API": {
+      "main": [
+        [
+          {
+            "node": "Kirim Email Test",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
