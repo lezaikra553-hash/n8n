@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: n8n-okx
+    runtime: docker
+    region: singapore
+    envVars:
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: 'false'
+      - key: N8N_HOST
+        value: '0.0.0.0'
+      - key: WEBHOOK_TUNNEL_URL
+        value: 'https://trading-bot-lu82.onrender.com'
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_TO
+        sync: false
+    buildCommand: 'echo "Building with Docker"'
+    startCommand: 'npm start'
