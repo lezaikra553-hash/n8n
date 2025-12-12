@@ -1,22 +1,11 @@
 services:
   - type: web
-    name: n8n-okx
-    runtime: docker
-    region: singapore
+    name: moonbot-agr
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python main.py"
+    autoDeploy: true
     envVars:
-      - key: N8N_BASIC_AUTH_ACTIVE
-        value: 'false'
-      - key: N8N_HOST
-        value: '0.0.0.0'
-      - key: WEBHOOK_TUNNEL_URL
-        value: 'https://trading-bot-lu82.onrender.com'
-      - key: SMTP_HOST
-        sync: false
-      - key: SMTP_PORT
-        sync: false
-      - key: SMTP_USER
-        sync: false
-      - key: SMTP_PASS
-        sync: false
-      - key: EMAIL_TO
-        sync: false
+      - key: PYTHON_VERSION
+        value: 3.10
